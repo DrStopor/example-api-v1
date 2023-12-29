@@ -39,6 +39,9 @@ class CustomAuthMethod extends AuthMethod
         ksort($this->params);
         $str = $this->prepareStringParams();
         $hash = md5($str);
+        /**
+         * Если будут переданы дополнительные параметры, то сравнение будет не корректным
+         */
         if (!$this->isEqualSig($hash, $sig)) {
             return null;
         }
@@ -52,9 +55,10 @@ class CustomAuthMethod extends AuthMethod
             if (!$userSession) {
                 return null;
             }
-            if (!$this->isEqualAccessToken($userSession->access_token, $this->params['access_token'])) {
+            // TODO реализация переносится в контроллер AuthController
+            /*if (!$this->isEqualAccessToken($userSession->access_token, $this->params['access_token'])) {
                 $this->updateAccessToken($userSession);
-            }
+            }*/
         }
 
         return $userAuth;
@@ -116,7 +120,8 @@ class CustomAuthMethod extends AuthMethod
      */
     private function getUser()
     {
-        $user = Users::findIdentityByAccessToken($this->params['access_token']);
+        // TODO реализация с приоритетом поиск по access_token
+        /*$user = Users::findIdentityByAccessToken($this->params['access_token']);
 
         if (!$user) {
             $user = Users::find()
@@ -124,7 +129,15 @@ class CustomAuthMethod extends AuthMethod
                 ->limit(1)
                 ->one();
         }
-        return $user;
+
+        if ($user !== null && $user->id !== (int)$this->params['id']) {
+            $user = null;
+        }*/
+
+        return Users::find()
+            ->where(['id' => $this->params['id']])
+            ->limit(1)
+            ->one();
     }
 
     /**
