@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "users".
@@ -18,20 +21,28 @@ use Yii;
  *
  * @property UsersSessions $usersSessions
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends ActiveRecord implements IdentityInterface
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'users';
     }
 
     /**
+     * @return string[]
+     */
+    public static function primaryKey(): array
+    {
+        return ['pk_user_id'];
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id', 'first_name', 'last_name', 'city', 'country'], 'required'],
@@ -45,7 +56,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'pk_user_id' => 'Первичный ключ',
@@ -62,19 +73,65 @@ class Users extends \yii\db\ActiveRecord
     /**
      * Gets query for [[UsersSessions]].
      *
-     * @return \yii\db\ActiveQuery|UsersSessionsQuery
+     * @return ActiveQuery
      */
-    public function getUsersSessions()
+    public function getUsersSessions(): ActiveQuery
     {
         return $this->hasOne(UsersSessions::class, ['user_id' => 'id']);
     }
 
     /**
-     * {@inheritdoc}
-     * @return UsersQuery the active query used by this AR class.
+     * @param $id
+     * @return Users|null
      */
-    public static function find()
+    public static function findIdentity($id): ?Users
     {
-        return new UsersQuery(get_called_class());
+        return self::find()
+            ->where(['id' => $id])
+            ->limit(1)
+            ->one();
+    }
+
+    /**
+     * @param $token
+     * @param $type
+     * @return IdentityInterface|null
+     */
+    public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface
+    {
+        $userId = UsersSessions::find()
+            ->select('user_id')
+            ->where(['access_token' => $token])
+            ->limit(1)
+            ->one();
+        return self::find()
+            ->where(['id' => $userId])
+            ->limit(1)
+            ->one();
+    }
+
+    /**
+     * @return int|string
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAuthKey(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @param $authKey
+     * @return bool|null
+     */
+    public function validateAuthKey($authKey): ?bool
+    {
+        return null;
     }
 }
