@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Описание API",
+    "description": "Описание методов API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost"
+    }
+  ],
+  "paths": {
+    "/v1/user_auth": {
+      "get": {
+        "summary": "Доступные методы",
+        "description": "Возвращает информацию о пользователе, если он предварительно был авторизован системой",
+        "responses": {
+          "200": {
+            "description": "Сервер получил запрос и успешно его обработал. Ответ всегда успешный (см. код error_key)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                },
+                "example": {
+                  "access_token": "1234567890",
+                  "User": {
+                    "id": 1,
+                    "first_name": "Иван",
+                    "last_name": "Иванов",
+                    "city": "Москва",
+                    "country": "Россия"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неверный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Неверный запрос",
+                  "error_key": "400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Пользователь не авторизован",
+                  "error_key": "401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Доступ запрещен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Доступ запрещен",
+                  "error_key": "403"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ресурс не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Ресурс не найден",
+                  "error_key": "404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Внутренняя ошибка сервера",
+                  "error_key": "500"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "query",
+            "description": "Токен доступа",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "first_name",
+            "in": "query",
+            "description": "Имя пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "last_name",
+            "in": "query",
+            "description": "Фамилия пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "description": "Город пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Страна пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sig",
+            "in": "query",
+            "description": "Подпись запроса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Response": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "User": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "Идентификатор пользователя"
+              },
+              "first_name": {
+                "type": "string",
+                "description": "Имя пользователя"
+              },
+              "last_name": {
+                "type": "string",
+                "description": "Фамилия пользователя"
+              },
+              "city": {
+                "type": "string",
+                "description": "Город пользователя"
+              },
+              "country": {
+                "type": "string",
+                "description": "Страна пользователя"
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Сообщение об ошибке"
+          },
+          "error_key": {
+            "type": "string",
+            "description": "Код ошибки"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Сообщение об ошибке"
+          },
+          "error_key": {
+            "type": "string",
+            "description": "Код ошибки"
+          }
+        }
+      }
+    }
+  }
+}
