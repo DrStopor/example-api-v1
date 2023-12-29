@@ -4,19 +4,14 @@ namespace app\controllers;
 
 
 
+use Yii;
 use yii\rest\Controller;
 
 class ErrorController extends Controller
 {
-
-    private $response = [
-        'error' => "Ошибка",
-        'error_key' => 'signature error',
-    ];
-
     public function actionError()
     {
-        $exception = \Yii::$app->errorHandler->exception;
+        $exception = Yii::$app->errorHandler->exception;
         if ($exception !== null) {
             $response = [
                 'error' => $exception->getMessage(),
@@ -25,7 +20,8 @@ class ErrorController extends Controller
             if ($exception instanceof \yii\web\HttpException) {
                 $response['error_key'] = $exception->statusCode;
             }
-            \Yii::$app->response->data = $response;
+            Yii::$app->response->data = $response;
+            Yii::$app->response->statusCode = 200;
 
             return $response;
         }

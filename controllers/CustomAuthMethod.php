@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Users;
 use app\models\UsersSessions;
+use app\helper\RequestHelper;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
@@ -25,7 +26,7 @@ class CustomAuthMethod extends AuthMethod
      */
     public function authenticate($user, $request, $response)
     {
-        $this->params = $this->getParams($request);
+        $this->params = RequestHelper::getParams($request);
         if (!$this->validateParams()) {
             return null;
         }
@@ -62,19 +63,6 @@ class CustomAuthMethod extends AuthMethod
         }
 
         return $userAuth;
-    }
-
-    /**
-     * @param Request $request
-     * @return array|object
-     * @throws InvalidConfigException
-     */
-    private function getParams(Request $request)
-    {
-        $bodyParams = $request->getBodyParams();
-        $queryParams = $request->getQueryParams();
-
-        return array_merge($bodyParams, $queryParams);
     }
 
     /**
