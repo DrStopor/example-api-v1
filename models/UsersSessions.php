@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "users_sessions".
@@ -12,12 +13,12 @@ use Yii;
  *
  * @property Users $user
  */
-class UsersSessions extends \yii\db\ActiveRecord
+class UsersSessions extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'users_sessions';
     }
@@ -25,21 +26,21 @@ class UsersSessions extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['user_id', 'access_token'], 'required'],
             [['user_id'], 'integer'],
             [['access_token'], 'string', 'max' => 255],
             [['user_id'], 'unique'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'id']],
+           /* [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'id']],*/
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'user_id' => 'FK ID пользователя',
@@ -50,19 +51,19 @@ class UsersSessions extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UsersQuery
+     * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(Users::class, ['id' => 'user_id']);
     }
 
     /**
-     * {@inheritdoc}
-     * @return UsersSessionsQuery the active query used by this AR class.
+     * @param $user_id
+     * @return UsersSessions|null
      */
-    public static function find()
+    public static function getUserSessionByUserId($user_id): ?UsersSessions
     {
-        return new UsersSessionsQuery(get_called_class());
+        return self::find()->where(['user_id' => $user_id])->limit(1)->one();
     }
 }

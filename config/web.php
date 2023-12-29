@@ -1,5 +1,9 @@
 <?php
 
+
+use yii\caching\FileCache;
+use app\api\v1\Module;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -15,23 +19,27 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'AV4Y31c8vTg96RRXIrhUrKokAL6geh4C',
+            'parsers' => [
+                'application/json' => \yii\web\JsonParser::class
+            ]
         ],
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => FileCache::class,
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'identityClass' => \app\models\Users::class,
+            'enableAutoLogin' => false,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'error/error',
+
         ],
-        'mailer' => [
+        /*'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
             // send all mails to a file by default.
             'useFileTransport' => true,
-        ],
+        ],*/
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -42,6 +50,13 @@ $config = [
             ],
         ],
         'db' => $db,
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+                'v1/user_auth' => 'v1/auth/auth',
+            ]
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -52,6 +67,11 @@ $config = [
         */
     ],
     'params' => $params,
+    'modules' => [
+        'v1' => [
+                'class' => Module::class,
+        ],
+    ],
 ];
 
 if (YII_ENV_DEV) {
